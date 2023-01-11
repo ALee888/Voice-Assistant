@@ -1,4 +1,7 @@
 import speech_recognition as sr
+from gtts import gTTS
+import os
+import time
 
 def recognize_mic(recognizer, microphone):
     """
@@ -36,6 +39,12 @@ def speak(response):
     """
     Future voice for assistant
     """
+    language = 'en'
+    ttsObj = gTTS(text=response, lang=language, slow=False)
+    ttsObj.save('response.mp3')
+    os.system('response.mp3')
+    os.remove('response.mp3')
+    
     print(response)
 
 if __name__ == "__main__":
@@ -57,17 +66,17 @@ if __name__ == "__main__":
             speak('How can I help you?')
             command = recognize_mic(recognizer, mic)
             if command["transcription"]:
+                if command["transcription"].lower() == "stop":
+                    fulfilled = True
+                    speak("Goodbye")
                 break
             if not command["success"]:
                 break
-            if command["transcription"].lower() == "stop":
-                fulfilled = True
-                speak("I didn't catch that. Could you repeat that?")
+            speak("I didn't catch that. Could you repeat that?")
 
         # if there was an error speak and end
         if command["error"]:
             speak("ERROR: {}".format(command["error"]))
         else:
-            
             # show the user the transcription
             speak("You said: {}".format(command["transcription"]))
