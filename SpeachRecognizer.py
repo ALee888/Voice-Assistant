@@ -1,5 +1,6 @@
 import speech_recognition as sr
 from gtts import gTTS
+from playsound import playsound
 import os
 import time
 
@@ -37,14 +38,15 @@ def recognize_mic(recognizer, microphone):
 
 def speak(response):
     """
-    Future voice for assistant
+    Turns text response into mp3 and then plays audio for user
+
+    Args: str response
     """
     language = 'en'
     ttsObj = gTTS(text=response, lang=language, slow=False)
     ttsObj.save('response.mp3')
-    os.system('response.mp3')
-    os.remove('response.mp3')
-    
+    playsound("response.mp3", False)
+    os.remove("response.mp3")
     print(response)
 
 if __name__ == "__main__":
