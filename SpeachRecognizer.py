@@ -36,18 +36,30 @@ def recognize_mic(recognizer, microphone):
     
     return response
 
-def speak(response):
+def createAudio(text, fileName):
     """
     Turns text response into mp3 and then plays audio for user
 
     Args: str response
     """
     language = 'en'
-    ttsObj = gTTS(text=response, lang=language, slow=False)
-    ttsObj.save('response.mp3')
-    playsound("response.mp3", False)
-    os.remove("response.mp3")
-    print(response)
+    fileName = "response.mp3"
+    ttsObj = gTTS(text=text, lang=language, slow=False)
+    ttsObj.save(fileName)
+    return fileName
+    
+def speak(audioFile):    
+    print("speaking...")
+    playsound(audioFile)
+    print("sleeping")
+    time.sleep(1)
+
+def speechHandler(text, fileName = "response.mp3"):
+    print("handler")
+    audioFileName = createAudio(text, fileName)
+    print("speak")
+    speak(audioFileName)
+    os.remove(fileName)
 
 if __name__ == "__main__":
     recognizer = sr.Recognizer()
@@ -65,20 +77,20 @@ if __name__ == "__main__":
         # if API request succeeded but no transcription was returned,
         #     re-prompt the user to say their command again untill 
         for j in range(attempts):
-            speak('How can I help you?')
+            speechHandler('How can I help you?')
             command = recognize_mic(recognizer, mic)
             if command["transcription"]:
                 if command["transcription"].lower() == "stop":
                     fulfilled = True
-                    speak("Goodbye")
+                    speechHandler("Goodbye")
                 break
             if not command["success"]:
                 break
-            speak("I didn't catch that. Could you repeat that?")
+            speechHandler("I didn't catch that. Could you repeat that?")
 
-        # if there was an error speak and end
+        # if there was an error speechHandler and end
         if command["error"]:
-            speak("ERROR: {}".format(command["error"]))
+            speechHandler("ERROR: {}".format(command["error"]))
         else:
             # show the user the transcription
-            speak("You said: {}".format(command["transcription"]))
+            speechHandler("You said: {}".format(command["transcription"]))
